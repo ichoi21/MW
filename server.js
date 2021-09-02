@@ -1,20 +1,46 @@
-import connectDB from './database/config/db.js'
-import userRoutes from './database/routes/userRoute.js'
-import dotenv  from 'dotenv'
-import express from 'express'
+const express = require("express");
+const mongoose = require("mongoose");
+const app = express();
+const cors = require("cors");
+const path = require("path");
+require("dotenv").config();
+const PORT = process.env.PORT || 5000;
 
-//connect database
-connectDB()
+// setup express
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(cors());
 
-//dotenv config
-dotenv.config()
+// setup routes
 
-const app = express()
 
-//Creating API for user
-app.use('/api/users', userRoutes)
+// setup mongoose
+mongoose.connect(
+  process.env.MONGODB_URI || "mongodb://localhost/",
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+    useFindAndModify: true,
+  },
+  (err) => {
+    if (err) throw err;
+    console.log("MongoDB connection established");
+  }
+);
 
-const PORT = process.env.PORT || 5000
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static("client/build"));
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+  });
+}
 
-//Express js listen method to run project on http://localhost:5000
-app.listen(PORT, console.log(`App is running in ${process.env.NODE_ENV} mode on port ${PORT}`))
+// setup routes
+
+
+app.listen(PORT, () => console.log(`Listening at: http://localhost:${PORT}`)); 
+
+app.get("/test", (req, res) => {
+  console.log("Hello, this is a test!");
+})
