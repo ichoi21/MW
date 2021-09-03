@@ -21,6 +21,36 @@ const asyncHandler = require("express-async-handler")
         throw new Error('User not found')
     }
 })
+const createUser = asyncHandler(async(req, res) => {
+    try{
+        const {email, password, passwordVerify} = req.body;
 
+        // validation
+        if (!email || !password || !passwordVerify) 
+        return res
+            .status(400)
+            .json({errorMessage: "Please enter all required fields"});
 
-module.exports = {getUsers, getUserById}
+        if (password.length < 6)
+        return res.status(400).json({
+            errorMessage: "Please enter a password of at least 6  characters."
+        });
+
+        if (password !== passwordVerify)
+        return res.status(400).json({
+            errorMessage: "Please enter the same password twice."
+        })
+
+        const existingUser = await User.findOne({email});
+        if (existingUser)
+            return res.status(400).json({
+                errorMessage: "An account with this email already exists."
+            })
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).send();
+    }
+})
+
+module.exports = {getUsers, getUserById, createUser}
