@@ -11,8 +11,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
 
-// setup routes
-
 
 // setup mongoose
 mongoose.connect(
@@ -37,6 +35,8 @@ if (process.env.NODE_ENV === "production") {
 }
 
 // setup routes
+
+app.use("/auth", require("./database/routes/userRoute"))
 
 
 app.listen(PORT, () => console.log(`Listening at: http://localhost:${PORT}`)); 

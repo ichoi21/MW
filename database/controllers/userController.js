@@ -1,14 +1,15 @@
-import User from '../models/usersModel.js'
-import asyncHandler from 'express-async-handler'
+const User = require("../models/usersModel")
+const asyncHandler = require("express-async-handler")
+
 
 //getUsers function to get all users
-export const getUsers = asyncHandler(async(req, res) => {
+ const getUsers = asyncHandler(async(req, res) => {
     const users = await User.find({})
     res.json(users)
 })
 
 //getUserById function to retrieve user by id
-export const getUserById  = asyncHandler(async(req, res) => {
+ const getUserById  = asyncHandler(async(req, res) => {
     const user = await User.findById(req.params.id)
 
     //if user id match param id send user else throw error
@@ -20,3 +21,6 @@ export const getUserById  = asyncHandler(async(req, res) => {
         throw new Error('User not found')
     }
 })
+
+
+module.exports = {getUsers, getUserById}
