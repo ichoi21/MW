@@ -1,5 +1,6 @@
 const User = require("../models/usersModel")
 const asyncHandler = require("express-async-handler")
+const bcrypt = require('bcryptjs')
 
 
 //getUsers function to get all users
@@ -29,7 +30,7 @@ const createUser = asyncHandler(async(req, res) => {
         if (!email || !password || !passwordVerify) 
         return res
             .status(400)
-            .json({errorMessage: "Please enter all required fields"});
+            .json({errorMessage: "Please enter all required fields."});
 
         if (password.length < 6)
         return res.status(400).json({
@@ -46,6 +47,18 @@ const createUser = asyncHandler(async(req, res) => {
             return res.status(400).json({
                 errorMessage: "An account with this email already exists."
             })
+
+        
+        // hash password
+        const salt = await bcrypt.genSalt();
+        const passwordHash = await bcrypt.hash(password, salt);
+        
+        // save a new user to DB
+        const newUser = new User({
+            email, passwordHash
+        });
+
+        const savedUser = await newUser.save();
 
     } catch (err) {
         console.log(err);
