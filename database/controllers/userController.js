@@ -1,7 +1,7 @@
 const User = require("../models/usersModel")
 const asyncHandler = require("express-async-handler")
 const bcrypt = require('bcryptjs')
-
+const jwt = require('jsonwebtoken')
 
 //getUsers function to get all users
  const getUsers = asyncHandler(async(req, res) => {
@@ -60,8 +60,21 @@ const createUser = asyncHandler(async(req, res) => {
 
         const savedUser = await newUser.save();
 
+        // sign token
+        const token = jwt.sign({
+            user: savedUser._id,
+        },
+        process.env.JWT_SECRET
+        );
+
+        // send the token to in a HTTP-only token
+        res.cookie("token", token, {
+            httpOnly: true,
+        })
+        .send();
+
     } catch (err) {
-        console.log(err);
+        console.log(err); 
         res.status(500).send();
     }
 })
