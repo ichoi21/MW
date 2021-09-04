@@ -1,5 +1,6 @@
 const {getUsers,getUserById, createUser, logInUser, logOutUser} = require("../controllers/userController")
 const router = require("express").Router()
+const auth = require("../middleware/auth")
 
 // exporess router method to create route for logging user out
 router.get('/logout', logOutUser)
